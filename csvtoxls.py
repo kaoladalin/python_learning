@@ -1,5 +1,5 @@
-#!/usr/bin/python
-# -*- coding:utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import os
 import sys
 import time
@@ -9,7 +9,6 @@ list = []
 
 
 def parsefile(filepath, mark):
-    print "[info]============>parse_file"
     dic = {}
     try:
         begin = time.time()
@@ -33,16 +32,26 @@ def parsefile(filepath, mark):
 
 
 def create_xls(file_path, list):
+    styleBlueBkg = xlwt.easyxf('pattern: pattern solid, fore_colour blue; font: bold on;')
+    styleredBkg = xlwt.easyxf('pattern: pattern solid, fore_colour red;')
+    styleyellowBkg = xlwt.easyxf('pattern: pattern solid, fore_colour yellow;')
     workbook = xlwt.Workbook(encoding = 'utf-8')
-    sheet1 = workbook.add_sheet('inventory status', cell_overwrite_ok=True)
+    sheet1 = workbook.add_sheet('库存状态', cell_overwrite_ok=True)
     for i, j in enumerate(list):
         if (i % 10000 == 0):
-            print("Perform to %s?" % (i + 1))
-        for s, k in enumerate(j):
-            sheet1.write(i, s, str(k))
+            print(" come to line %s " % (i + 1))
+            for s, k in enumerate(j):
+                sheet1.write(i, s, str(k),styleBlueBkg)
+        else:
+            for s, k in enumerate(j):
+                if (str(k)=='无货'):
+                    sheet1.write(i, s - 1,str(j[s-1]),styleyellowBkg)
+                if (str(k)=='空'):
+                    sheet1.write(i, s - 2,str(j[s-2]),styleredBkg)
+                sheet1.write(i, s, str(k))
     file_path = file_path.replace('\\', '/')
     workbook.save(file_path)
-    print('create excel finish!')
+    print('csv to excel finish!')
     return file_path
 
 
@@ -52,5 +61,5 @@ if __name__ == '__main__':
     srcfile=floder+u'/inventory.csv'
     print("srcfile:%s"%(srcfile))
     [des_filename, extname] = os.path.splitext(srcfile)
-    parsefile(srcfile, ',')
+    parsefile(srcfile,'，')
     create_xls(des_filename + u"_r.xls", list)
