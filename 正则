@@ -3,3 +3,9 @@ m=re.match(r'ACTION\s*([a-zA-Z]+)\s+.+duration=(\d*\.\d+)sec',str)
 m.group(1)
 m.group(2)
 m.groups()
+d={}
+for k in ['Press','Value']:
+    if not d.has_key(k):
+        d[k]=[]
+    d[k]=d[k]+[round(4.456,3)]
+print d
