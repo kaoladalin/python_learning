@@ -1,5 +1,7 @@
 str='ACTION Press [finished] result=SUCCESS duration=8.054sec'
 m=re.match(r'ACTION\s*([a-zA-Z]+)\s+.+duration=(\d*\.\d+)sec',str)
+m=re.match(r'(\d+)/(\d+)\s*(\d+):(\d+):(\d+),(\d+).+?ACTION\s*([a-zA-Z]+).+?started',str)
+m=re.match(r'(\d+)/(\d+)\s*(\d+):(\d+):(\d+),(\d+).+?ACTION\s*([a-zA-Z]+).+?finished',str)
 m.group(1)
 m.group(2)
 m.groups()
