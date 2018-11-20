@@ -38,7 +38,7 @@ def process_log_action(log_file):
         each_line.append(key)
         times=len(value)
         value=list(map(float,value))
-        average=reduce(lambda x,y:x+y,value)
+        average=reduce(lambda x,y:x+y,value)/times
         each_line.append('%.3f' % average)
         each_line.append(times)
         date_ave.append(each_line)
@@ -101,7 +101,7 @@ def process_log(log_file):
         each_line.append(key)
         times=len(value)
         value=list(map(float,value))
-        average=reduce(lambda x,y:x+y,value)
+        average=reduce(lambda x,y:x+y,value)/times
         each_line.append('%.3f' % average)
         each_line.append(times)
         date_opt_ave.append(each_line)
@@ -119,7 +119,7 @@ def process_log(log_file):
         each_line.append(key)
         times=len(value)
         value=list(map(float,value))
-        average=reduce(lambda x,y:x+y,value)
+        average=reduce(lambda x,y:x+y,value)/times
         each_line.append('%.3f' % average)
         each_line.append(times)
         date_act_ave.append(each_line)
