@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 from functools import reduce
 
-def process_log(log_file):
+def process_log_action(log_file):
     date={}
     date_ave=[]
     pat_start=re.compile(r'(\d+)/(\d+)\s*(\d+):(\d+):(\d+),(\d+).+?ACTION\s*([a-zA-Z]+).+?started')
@@ -45,7 +45,11 @@ def process_log(log_file):
     date_ave=sorted(date_ave,key=lambda date_ave:date_ave[2])
     return date_ave
 
-def process_log_operation(log_file):
+def process_log(log_file):
+    date_act_start={}
+    date_act_end={}
+    date_act={}
+    date_act_ave=[]
     date_opt_start={}
     date_opt_end={}
     date_opt={}
@@ -69,6 +73,21 @@ def process_log_operation(log_file):
                     if operation_name not in date_opt_end.keys():
                         date_opt_end[operation_name]=[]
                     date_opt_end[operation_name].append(end_time)
+            if re.findall('ACTION',eachline):
+                L=eachline.split()
+                operation_name=L[4]
+                if L[5] == '[started]':
+                    str='2018'+' '+L[0]+' '+L[1]
+                    start_time=datetime.strptime(str,'%Y %m/%d %H:%M:%S,%f')
+                    if operation_name not in date_act_start.keys():
+                        date_act_start[operation_name]=[]
+                    date_act_start[operation_name].append(start_time)
+                if L[5] == '[finished]':
+                    str='2018'+' '+L[0]+' '+L[1]
+                    end_time=datetime.strptime(str,'%Y %m/%d %H:%M:%S,%f')
+                    if operation_name not in date_act_end.keys():
+                        date_act_end[operation_name]=[]
+                    date_act_end[operation_name].append(end_time)
 
     for key in date_opt_start.keys():
       #  date_opt[key]=map('%.3f' % (lambda x,y:(y-x).seconds+(y-x).microseconds/1000000,date_opt_start[key],date_opt_end[key]))
@@ -87,30 +106,59 @@ def process_log_operation(log_file):
         each_line.append(times)
         date_opt_ave.append(each_line)
     date_opt_ave=sorted(date_opt_ave,key=lambda date_opt_ave:date_opt_ave[2])
-    return date_opt_ave
+
+    for key in date_act_start.keys():
+      #  date_act[key]=map('%.3f' % (lambda x,y:(y-x).seconds+(y-x).microseconds/1000000,date_act_start[key],date_act_end[key]))
+        date_act[key]=[]
+        for i in range(len(date_act_start[key])):
+            duration=(date_act_end[key][i]-date_act_start[key][i]).seconds+(date_act_end[key][i]-date_act_start[key][i]).microseconds/1000000
+            date_act[key].append('%.3f' % (duration))
+
+    for key,value in date_act.items():
+        each_line=[]
+        each_line.append(key)
+        times=len(value)
+        value=list(map(float,value))
+        average=reduce(lambda x,y:x+y,value)
+        each_line.append('%.3f' % average)
+        each_line.append(times)
+        date_act_ave.append(each_line)
+    date_act_ave=sorted(date_act_ave,key=lambda date_act_ave:date_act_ave[2])
+
+    return date_opt_ave,date_act_ave
 
 
-def create_xls(date_ave,date_opt_ave):
-    date=date_ave+date_opt_ave
+def create_xls(date_act_ave,date_opt_ave):
     workbook = xlwt.Workbook(encoding='utf-8')
-    sheet=workbook.add_sheet('log_stats', cell_overwrite_ok=True)
+    sheet1=workbook.add_sheet('date_action', cell_overwrite_ok=True)
+    sheet2=workbook.add_sheet('date_opteration', cell_overwrite_ok=True)
     style = xlwt.easyxf('pattern: pattern solid, fore_colour yellow')
-    sheet.write(0, 0, 'action_name')
-    sheet.write(0, 1, 'average_time')
-    sheet.write(0, 2, 'frequency')
-    for i, each_line in enumerate(date):
+    sheet1.write(0, 0, 'action_name')
+    sheet1.write(0, 1, 'average_time')
+    sheet1.write(0, 2, 'frequency')
+    sheet2.write(0, 0, 'operation_name')
+    sheet2.write(0, 1, 'average_time')
+    sheet2.write(0, 2, 'frequency')
+    for i, each_line in enumerate(date_act_ave):
         if float(each_line[1]) >= 2:
             for j,value in enumerate(each_line):
-                sheet.write(i+1, j, value, style)
+                sheet1.write(i+1, j, value, style)
         else:
             for j,value in enumerate(each_line):
-                sheet.write(i+1, j, value)
-    workbook.save('log.xls')
+                sheet1.write(i+1, j, value)
+    for i, each_line in enumerate(date_opt_ave):
+        if float(each_line[1]) >= 2:
+            for j,value in enumerate(each_line):
+                sheet2.write(i+1, j, value, style)
+        else:
+            for j,value in enumerate(each_line):
+                sheet2.write(i+1, j, value)
+    workbook.save('log_date.xls')
 
 if __name__ == '__main__':
     floder = os.path.dirname(os.path.realpath(__file__))
     srcfile = floder + u'/case_log.txt'
     print("srcfile:%s" % (srcfile))
-    log_date=process_log(srcfile)
-    log_opt_date=process_log_operation(srcfile)
-    create_xls(log_date,log_opt_date)
+    #log_date=process_log_action(srcfile)
+    date_opt,date_act=process_log(srcfile)
+    create_xls(date_act,date_opt)
