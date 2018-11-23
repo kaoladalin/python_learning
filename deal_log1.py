@@ -62,14 +62,14 @@ def process_log(log_file):
                 L=eachline.split()
                 operation_name=L[4]
                 if L[5] == '[started]':
-                    str='2018'+' '+L[0]+' '+L[1]
-                    start_time=datetime.strptime(str,'%Y %m/%d %H:%M:%S,%f')
+                    time_str='2018'+' '+L[0]+' '+L[1]
+                    start_time=datetime.strptime(time_str,'%Y %m/%d %H:%M:%S,%f')
                     if operation_name not in date_opt_start.keys():
                         date_opt_start[operation_name]=[]
                     date_opt_start[operation_name].append(start_time)
                 if L[5] == '[finished]':
-                    str='2018'+' '+L[0]+' '+L[1]
-                    end_time=datetime.strptime(str,'%Y %m/%d %H:%M:%S,%f')
+                    time_str='2018'+' '+L[0]+' '+L[1]
+                    end_time=datetime.strptime(time_str,'%Y %m/%d %H:%M:%S,%f')
                     if operation_name not in date_opt_end.keys():
                         date_opt_end[operation_name]=[]
                     date_opt_end[operation_name].append(end_time)
@@ -77,14 +77,14 @@ def process_log(log_file):
                 L=eachline.split()
                 operation_name=L[4]
                 if L[5] == '[started]':
-                    str='2018'+' '+L[0]+' '+L[1]
-                    start_time=datetime.strptime(str,'%Y %m/%d %H:%M:%S,%f')
+                    time_str='2018'+' '+L[0]+' '+L[1]
+                    start_time=datetime.strptime(time_str,'%Y %m/%d %H:%M:%S,%f')
                     if operation_name not in date_act_start.keys():
                         date_act_start[operation_name]=[]
                     date_act_start[operation_name].append(start_time)
                 if L[5] == '[finished]':
-                    str='2018'+' '+L[0]+' '+L[1]
-                    end_time=datetime.strptime(str,'%Y %m/%d %H:%M:%S,%f')
+                    time_str='2018'+' '+L[0]+' '+L[1]
+                    end_time=datetime.strptime(time_str,'%Y %m/%d %H:%M:%S,%f')
                     if operation_name not in date_act_end.keys():
                         date_act_end[operation_name]=[]
                     date_act_end[operation_name].append(end_time)
