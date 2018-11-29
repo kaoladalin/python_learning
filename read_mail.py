@@ -1,6 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+    python_learning.read_mail
+    ~~~~~~~~~~~~~~~~~~~
+    Mail parsing.
+    :copyright: Â© 2018 by zkaoladalin
+    :license: MIT, see LICENSE for more details.
+"""
+
+
+import argparse
+import traceback
+
 from email.parser import Parser
 from email.header import decode_header
 from email.utils import parseaddr
@@ -84,3 +96,30 @@ print_info(msg)
 # server.dele(index)
 # 关闭连接:
 server.quit()
+
+def process_argv():
+    """
+    Processing input arguments
+    :return: input args, has to be an instance of :attr:`argparse.Namespace`.
+    """
+    parser = argparse.ArgumentParser(prog='readmail')
+    parser.add_argument('--username', '-user',
+                        help='The user of the mail.',
+                        required=True)
+    parser.add_argument('--password', '-pwd',
+                        help='The password of the mail.',
+                        required=True)
+    parser.add_argument('--server', '-s',
+                        default='pop.qq.com:995'
+                        help='The password of the mail.',
+                        )
+    return parser.parse_args()
+
+if __name__ == '__main__':
+    try:
+        arg = process_argv()
+        content = load_csv(arg.inputcsv)
+        export_xls(content, arg.outputxls)
+    except Exception as exp:
+        print(exp)
+        traceback.print_exc()
