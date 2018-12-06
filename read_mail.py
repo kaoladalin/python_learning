@@ -9,7 +9,6 @@
     :license: MIT, see LICENSE for more details.
 """
 
-
 import argparse
 import traceback
 
@@ -18,6 +17,7 @@ from email.header import decode_header
 from email.utils import parseaddr
 
 import poplib
+
 
 def guess_charset(msg):
     charset = msg.get_charset()
@@ -28,25 +28,27 @@ def guess_charset(msg):
             charset = content_type[pos + 8:].strip()
     return charset
 
+
 def decode_str(s):
     value, charset = decode_header(s)[0]
     if charset:
         value = value.decode(charset)
     return value
 
+
 def print_info(msg, indent=0):
     if indent == 0:
         for header in ['From', 'To', 'Subject']:
             value = msg.get(header, '')
             if value:
-                if header=='Subject':
+                if header == 'Subject':
                     value = decode_str(value)
                 else:
                     hdr, addr = parseaddr(value)
                     name = decode_str(hdr)
                     value = u'%s <%s>' % (name, addr)
             print('%s%s: %s' % ('  ' * indent, header, value))
-    if (msg.is_multipart()):
+    if msg.is_multipart():
         parts = msg.get_payload()
         for n, part in enumerate(parts):
             print('%spart %s' % ('  ' * indent, n))
@@ -54,7 +56,7 @@ def print_info(msg, indent=0):
             print_info(part, indent + 1)
     else:
         content_type = msg.get_content_type()
-        if content_type=='text/plain' or content_type=='text/html':
+        if content_type == 'text/plain' or content_type == 'text/html':
             content = msg.get_payload(decode=True)
             charset = guess_charset(msg)
             if charset:
@@ -63,7 +65,8 @@ def print_info(msg, indent=0):
         else:
             print('%sAttachment: %s' % ('  ' * indent, content_type))
 
-def email_check(email,password,pop3_server):
+
+def email_check(email, password, pop3_server):
     # 连接到POP3服务器:
     server = poplib.POP3(pop3_server)
     # 可以打开或关闭调试信息:
@@ -93,28 +96,30 @@ def email_check(email,password,pop3_server):
     # 关闭连接:
     server.quit()
 
+
 def process_argv():
     """
     Processing input arguments
     :return: input args, has to be an instance of :attr:`argparse.Namespace`.
     """
-    parser = argparse.ArgumentParser(prog='readmail')
-    parser.add_argument('--username', '-user',
+    parser = argparse.ArgumentParser(prog='read_mail')
+    parser.add_argument('--username', '-u',
                         help='The user of the mail.',
                         required=True)
-    parser.add_argument('--password', '-pwd',
+    parser.add_argument('--password', '-p',
                         help='The password of the mail.',
                         required=True)
     parser.add_argument('--server', '-s',
-                        default='pop.qq.com'
+                        default='pop3.sina.com.cn',
                         help='The server of the mail.',
                         )
     return parser.parse_args()
 
+
 if __name__ == '__main__':
     try:
         arg = process_argv()
-        email_check(arg.username,arg.password,arg.server)
+        email_check(arg.username, arg.password, arg.server)
     except Exception as exp:
         print(exp)
         traceback.print_exc()
