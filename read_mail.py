@@ -43,10 +43,18 @@ def print_info(msg, indent=0):
             if value:
                 if header == 'Subject':
                     value = decode_str(value)
+                if header in ['To', 'Cc']:
+                    value_list= value.split(",")
+                    for val in value_list:
+                        hdr, addr = parseaddr(val)
+                        name = decode_str(hdr)
+                        val = u'%s <%s>' % (name, addr)
+                        value = u','.join(val)
                 else:
                     hdr, addr = parseaddr(value)
                     name = decode_str(hdr)
                     value = u'%s <%s>' % (name, addr)
+                    print('%s%s: %s' % ('  ' * indent, header, value))
             print('%s%s: %s' % ('  ' * indent, header, value))
     if msg.is_multipart():
         parts = msg.get_payload()
