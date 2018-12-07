@@ -45,11 +45,13 @@ def print_info(msg, indent=0):
                     value = decode_str(value)
                 if header in ['To', 'Cc']:
                     value_list= value.split(",")
+                    per_list=[]
                     for val in value_list:
                         hdr, addr = parseaddr(val)
                         name = decode_str(hdr)
                         val = u'%s <%s>' % (name, addr)
-                        value = u','.join(val)
+                        per_list.append(val)
+                    value = u','.join(per_list)
                 else:
                     hdr, addr = parseaddr(value)
                     name = decode_str(hdr)
