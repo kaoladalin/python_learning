@@ -56,7 +56,7 @@ def print_info(msg, indent=0):
                     hdr, addr = parseaddr(value)
                     name = decode_str(hdr)
                     value = u'%s <%s>' % (name, addr)
-                    print('%s%s: %s' % ('  ' * indent, header, value))
+                    #print('%s%s: %s' % ('  ' * indent, header, value))
             print('%s%s: %s' % ('  ' * indent, header, value))
     if msg.is_multipart():
         parts = msg.get_payload()
